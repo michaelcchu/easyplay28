@@ -1,0 +1,1 @@
+implement easyplay10/14 with polyphony (using chord-style technology from easyplay17)
