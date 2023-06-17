@@ -14,10 +14,16 @@ function key(e) {
             && (press !== activePress) 
             && splash.classList.contains("splash-toggle")) {
                 e.preventDefault();
-                SheetMusicDisplay.goToNextNote();
-                const note = SheetMusicDisplay.getCurrentNote();            
-                if (note) {
-                    SoundGenerator.startPlaying(note, activePress);
+
+                let chord = SheetMusicDisplay.getCurrentChord();            
+                if (chord) {
+                    SoundGenerator.stopPlaying(chord, activePress);
+                }
+
+                SheetMusicDisplay.goToNextChord();
+                chord = SheetMusicDisplay.getCurrentChord();            
+                if (chord) {
+                    SoundGenerator.startPlaying(chord, activePress);
                     activePress = press;
                 }
         }
@@ -25,7 +31,10 @@ function key(e) {
     
     function up() {
         if (press === activePress) {
-            SoundGenerator.stopPlaying();
+            const chord = SheetMusicDisplay.getCurrentChord();            
+            if (chord) {
+                SoundGenerator.stopPlaying(chord);
+            }
             activePress = null;
         }
     }

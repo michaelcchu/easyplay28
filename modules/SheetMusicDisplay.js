@@ -20,16 +20,18 @@ export default (() => {
     let loadPromise; let parts; let track;
     parse("./data/Aus_meines_Herzens_Grunde.mxl");
     
-    function getCurrentNote() {
-        const osmdNote = osmd.cursor.NotesUnderCursor()[0];
-        if (osmdNote) {
+    function getCurrentChord() {
+        const osmdChord = osmd.cursor.NotesUnderCursor();
+        const chord = [];
+        for (let osmdNote of osmdChord) {
             const pitch = osmdNote.pitch;
             const note = {
                 pitch: pitch.fundamentalNote + pitch.AccidentalHalfTones, 
                 octave: pitch.octave + 3,
             }
-            return note;
+            chord.push(note);
         }
+        return chord;
     }
 
     function goToMeasure() {
@@ -62,7 +64,7 @@ export default (() => {
         }
     }
 
-    function goToNextNote() {
+    function goToNextChord() {
         // Skip tied notes
         while ((osmd.cursor.NotesUnderCursor().length > 0) 
         && osmd.cursor.NotesUnderCursor()[0] 
@@ -81,7 +83,7 @@ export default (() => {
         }   
     }
 
-    function goToPreviousNote() {
+    function goToPreviousChord() {
         osmd.cursor.previous();
 
         // Skip tied notes
@@ -102,8 +104,8 @@ export default (() => {
 
     function moveCursor(e) {
         if (document.activeElement.nodeName !== 'INPUT') {
-            if (e.key === "ArrowLeft") {goToPreviousNote();}
-            else if (e.key === "ArrowRight") {goToNextNote();}
+            if (e.key === "ArrowLeft") {goToPreviousChord();}
+            else if (e.key === "ArrowRight") {goToNextChord();}
         }   
     }
 
@@ -160,7 +162,7 @@ export default (() => {
     }
 
     return {
-        getCurrentNote: getCurrentNote, 
-        goToNextNote: goToNextNote
+        getCurrentChord: getCurrentChord, 
+        goToNextChord: goToNextChord
     };
 })();
