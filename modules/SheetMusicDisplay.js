@@ -9,9 +9,6 @@ export default (() => {
     const go = document.getElementById("go");
     go.addEventListener("click", goToMeasure);
 
-    const select = document.getElementById("select");
-    select.addEventListener("change", setTrack);
-
     const view = document.getElementById("view");
     view.addEventListener("change", setView);
 
@@ -113,14 +110,11 @@ export default (() => {
     function parse(text) {
         loadPromise = osmd.load(text);
         loadPromise.then(() => {
-           // replace the old track options with new track options 
-           while (select.options.length) {select.options.remove(0);}
-           parts = osmd.sheet.Instruments;
-           for (let i = 0; i < parts.length; i++) {
-               const option = document.createElement("option");
-               option.text = parts[i].nameLabel.text; select.add(option);
-           }
-           setTrack(null, true);
+            parts = osmd.sheet.Instruments;
+            for (let i = 0; i < parts.length; i++) {
+                osmd.sheet.Instruments[i].Visible = true;
+            }
+            render(true);
        });       
     }
 
@@ -149,14 +143,6 @@ export default (() => {
                 document.activeElement.blur();
             });
         }
-    }
-
-    function setTrack(e, reset=false) {
-        track = select.selectedIndex;
-        for (let i = 0; i < parts.length; i++) {
-            osmd.sheet.Instruments[i].Visible = (i === track);
-        }
-        render(reset);
     }
 
     function setView() {
