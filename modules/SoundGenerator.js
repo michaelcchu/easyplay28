@@ -1,6 +1,7 @@
 export default (() => {
     const audioContext = new AudioContext();
     const gainNodes = [];
+    const oscNodes = [];
 
     const dbfs = document.getElementById("dbfs");
     dbfs.addEventListener("change", setGain);
@@ -12,36 +13,38 @@ export default (() => {
     let normalGain;
     let tuning;
 
+    function tuneOscillators() {
+        for (let i = 0; i < 128; i++) {
+            const freq = tuning.frequency * 2**((i - toMidi(tuning)) / 12);
+            oscNodes[i].frequency.setValueAtTime(freq, 
+                audioContext.currentTime);
+        }
+    }
+
     function initialize() {
-        setGain();
-        setTuning();
-
-        if (!on) {
-            tuning = {pitch: 9, octave: 4, text: "a4", frequency: 440}; 
-
-            const tuningMidiNumber = tuning.pitch + 12 * (tuning.octave + 1);
-        
-            for (let i = 0; i < 128; i++) {
-              const freq = tuning.frequency * 2**((i - tuningMidiNumber) / 12);
-            
-              const oscillator = new OscillatorNode(audioContext, 
-                {frequency: freq});
+        if (!on) {        
+            for (let i = 0; i < 128; i++) {            
+              const oscillator = new OscillatorNode(audioContext);
               const gainNode = new GainNode(audioContext, {gain: 0});
             
               oscillator.connect(gainNode).connect(audioContext.destination);
               oscillator.start();
   
               gainNodes.push(gainNode);
+              oscNodes.push(oscillator);
             }
-  
+              
             on = true;
         }
-        
-        resetVars();
+
+        resetGainNodes();
+
+        setGain();
+        setTuning();
         document.activeElement.blur();
     }
 
-    function resetVars() {
+    function resetGainNodes() {
         for (let gainNode of gainNodes) {gainNode.gain.value = 0;}
     }
 
@@ -60,20 +63,21 @@ export default (() => {
             octave: +tuningOctave.value,
             frequency: +tuningFrequency.value
         }
+        tuneOscillators();
     }
 
     function toMidi(note) {
         return (note.octave + 1) * 12 + note.pitch;
     }
 
-    function startPlaying(chord, activePress) {
+    function toFreq(note) {
+        return tuning.frequency * 2**((note.pitch - tuning.pitch)/12 
+            + note.octave - tuning.octave)
+    }
+
+    function startPlaying(chord) {
         if (on) {
             for (let note of chord) {
-                function toFreq(note) {
-                    return tuning.frequency * 2**((note.pitch - tuning.pitch)/12 
-                        + note.octave - tuning.octave)
-                }
-    
                 const freq = toFreq(note);
     
                 let gain = 0;

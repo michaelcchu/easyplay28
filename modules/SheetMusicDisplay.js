@@ -15,8 +15,6 @@ export default (() => {
     const zoomFactor = document.getElementById("zoomFactor");
     zoomFactor.addEventListener("change", setZoom);
 
-    document.addEventListener("keydown", moveCursor);
-
     let loadPromise; let parts; let track;
     parse("./data/Aus_meines_Herzens_Grunde.mxl");
     
@@ -24,12 +22,14 @@ export default (() => {
         const osmdChord = osmd.cursor.NotesUnderCursor();
         const chord = [];
         for (let osmdNote of osmdChord) {
-            const pitch = osmdNote.pitch;
-            const note = {
-                pitch: pitch.fundamentalNote + pitch.AccidentalHalfTones, 
-                octave: pitch.octave + 3,
+            if (!osmdNote.isRestFlag) {
+                const pitch = osmdNote.pitch;
+                const note = {
+                    pitch: pitch.fundamentalNote + pitch.AccidentalHalfTones, 
+                    octave: pitch.octave + 3,
+                }
+                chord.push(note);    
             }
-            chord.push(note);
         }
         return chord;
     }
@@ -65,6 +65,7 @@ export default (() => {
     }
 
     function goToNextChord() {
+        /*
         // Skip tied notes
         while ((osmd.cursor.NotesUnderCursor().length > 0) 
         && osmd.cursor.NotesUnderCursor()[0] 
@@ -72,15 +73,16 @@ export default (() => {
         && osmd.cursor.NotesUnderCursor()[0].tie.Notes.at(-1)
         !== osmd.cursor.NotesUnderCursor()[0]) {
             osmd.cursor.next();
-        }
+        }*/
 
         osmd.cursor.next();
 
+        /*
         // Skip rests
         while ((osmd.cursor.NotesUnderCursor().length > 0) 
             && osmd.cursor.NotesUnderCursor()[0].isRest()) {
             osmd.cursor.next();
-        }   
+        }*/
     }
 
     function goToPreviousChord() {
@@ -163,6 +165,7 @@ export default (() => {
 
     return {
         getCurrentChord: getCurrentChord, 
-        goToNextChord: goToNextChord
+        goToNextChord: goToNextChord,
+        goToPreviousChord: goToPreviousChord
     };
 })();

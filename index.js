@@ -17,16 +17,32 @@ function key(e) {
 
                 let chord = SheetMusicDisplay.getCurrentChord();            
                 if (chord) {
-                    SoundGenerator.stopPlaying(chord, activePress);
+                    SoundGenerator.stopPlaying(chord);
                 }
 
                 SheetMusicDisplay.goToNextChord();
                 chord = SheetMusicDisplay.getCurrentChord();            
                 if (chord) {
-                    SoundGenerator.startPlaying(chord, activePress);
+                    SoundGenerator.startPlaying(chord);
                     activePress = press;
                 }
         }
+        if (document.activeElement.nodeName !== 'INPUT') {
+            if (e.key === "ArrowLeft") {
+                let chord = SheetMusicDisplay.getCurrentChord();            
+                if (chord) {
+                    SoundGenerator.stopPlaying(chord);
+                }
+                SheetMusicDisplay.goToPreviousChord();
+            }
+            else if (e.key === "ArrowRight") {
+                let chord = SheetMusicDisplay.getCurrentChord();            
+                if (chord) {
+                    SoundGenerator.stopPlaying(chord);
+                }
+                SheetMusicDisplay.goToNextChord();
+            }
+        }   
     }
     
     function up() {
