@@ -84,7 +84,7 @@ export default (() => {
                 if (freq > 0) {
                     gain = normalGain * (49 / freq);
                 }
-                gain = 0.015; //normalGain;
+                gain = 0.15; //normalGain;
         
                 gainNodes[toMidi(note)].gain.setTargetAtTime(gain,
                     audioContext.currentTime, 0.015);
